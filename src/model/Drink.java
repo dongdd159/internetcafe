@@ -2,7 +2,9 @@ package model;
 
 import controller.Service;
 
-public class Drink extends Service {
+import java.io.Serializable;
+
+public class Drink extends Service implements Serializable {
     private String name = "Nước ngọt" ;
     private double price = 10000;
     public Drink() {
@@ -22,5 +24,12 @@ public class Drink extends Service {
     @Override
     public void setPrice(double price) {
         this.price = price;
+    }
+    @Override
+    public String toString() {
+        return "Drink{" +
+                "name='" + name + '\'' +
+                ", price=" + price +
+                '}';
     }
 }

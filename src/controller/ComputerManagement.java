@@ -1,48 +1,55 @@
 package controller;
 import model.Computer;
+import storage.ComputerListFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
-public abstract class ComputerManagement {
-    String name;
+public class ComputerManagement {
+    ComputerListFile computerListFile = ComputerListFile.getINSTANCE();
     protected static List<Computer> computerList=new ArrayList<>();
-    protected double priceanhour=3000;
-    public String getName() {
-        return name;
-    }
-    public double getPriceanhour() {
+    protected static double priceanhour=3000;
+    protected static double income=0;
+    protected double getPriceanhour() {
         return priceanhour;
     }
-    public void setPriceanhour(double priceanhour) {
+
+    protected void setPriceanhour(double priceanhour) {
         this.priceanhour = priceanhour;
     }
-    public List<Computer> getComputerList() {
+    protected List<Computer> getComputerList() throws IOException, ClassNotFoundException{
+            computerList = computerListFile.readFile();
         return computerList;
     }
     public static void setComputerList(List<Computer> computerList) {
         ComputerManagement.computerList = computerList;
     }
-    public int displayNumber(){
+    public ComputerManagement() {
+    }
+    protected int displayNumber(){
         return computerList.size();
     }
-    public void addCom(int id){
+    protected void addCom(int id) throws IOException {
         computerList.add(new Computer(id));
+        computerListFile.writeFile(computerList);
     }
-    public void setId(int id,int newid){
+    protected void setId(int id,int newid) throws IOException{
         for (Computer computer: computerList) {
             if (computer.getId()==id){
                 computer.setId(newid);
             }
         }
+        computerListFile.writeFile(computerList);
     }
-    public void removeCom(Computer computer){
+    protected void removeCom(Computer computer) throws IOException{
         computerList.remove(computer);
+        computerListFile.writeFile(computerList);
     }
-    public List<Computer> displayList(){
+    protected List<Computer> displayList(){
         return computerList;
     }
-    public String checkStatus(int id)throws Exception{
+    protected String checkStatus(int id)throws IOException{
         for (Computer computer: computerList) {
             if (computer.getId()==id){
                 if (computer.isStatus()){
@@ -54,18 +61,22 @@ public abstract class ComputerManagement {
         }
         return "id ko tồn tại";
     }
-    public void addService(Service service,int id){
+    protected void addService(Service service,int id)throws IOException{
         for (Computer computer: computerList) {
             if (computer.getId()==id){
                 computer.addService(service);
             }
         }
+        computerListFile.writeFile(computerList);
     }
-    public double getPayment(int id,double hour){
+    protected double getPayment(int id,double hour)throws IOException{
         Computer computer = findbyid(id);
-        return priceanhour*hour+computer.getServicePayment();
+        double payment = priceanhour*hour+computer.getServicePayment();
+        income += payment;
+        computerListFile.writeFile(computerList);
+        return payment;
     }
-    public Computer findbyid(int id){
+    protected Computer findbyid(int id){
         Computer computer =null;
         for (Computer com:computerList) {
             if (com.getId()==id){
@@ -75,6 +86,9 @@ public abstract class ComputerManagement {
         return computer;
     }
 
+    protected static double getIncome() {
+        return income;
+    }
 
     @Override
     public String toString() {

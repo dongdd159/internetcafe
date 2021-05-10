@@ -1,43 +1,52 @@
 package controller;
+import storage.EmployeeListFile;
 
-import model.Computer;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 
-public class Admin extends ComputerManagement{
+
+public class Admin extends Manager{
+    EmployeeListFile employeeListFile = EmployeeListFile.getINSTANCE();
     protected static List<Employee> employeeList = new ArrayList<>();
-    static double income;
-
-    public Admin() {
-        super();
-        this.name = "admin";
+    ComputerManagement computerManagement;
+    String name = "admin";
+    public Admin(ComputerManagement computerManagement) {
+        super(computerManagement);
     }
-
+    public String getName() {
+        return name;
+    }
+    public  List<Employee> getEmployeeList() throws IOException, ClassNotFoundException{
+        employeeList = employeeListFile.readFile();
+        return employeeList;
+    }
     public void setPrice(double price){
         setPriceanhour(price);
     }
-    public void addEmployee(String name){
-        employeeList.add(new Employee(name));
+    public Employee addEmployee(String name) throws IOException{
+        Employee employee = new Employee(name);
+        employeeList.add(employee);
+        employeeListFile.writeFile(employeeList);
+        return employee;
     }
-    public double getPayment(int id,double hour){
-        Computer computer = findbyid(id);
-        double payment = priceanhour*hour+computer.getServicePayment();
-        income += payment;
-        return payment;
-    }
-    public static double getIncome() {
-        return income;
+    public double getIncome() {
+        return computerManagement.getIncome();
     }
     public List<Employee> displayEmployeeList(){
         return employeeList;
     }
+    public boolean checkAccount(String acc){
+        for (Employee employee:employeeList) {
+            if (acc.equals(employee.getName())){
+                return true;
+            }
+        }
+        return false;
+    }
 
-    @Override
-    public String toString() {
-        return "Admin{" +
-                "name='" + name + '\'' +
-                '}';
+    public static void setEmployeeList(List<Employee> employeeList) {
+        Admin.employeeList = employeeList;
     }
 }

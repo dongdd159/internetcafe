@@ -3,10 +3,11 @@ package model;
 import controller.ComputerManagement;
 import controller.Service;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Computer {
+public class Computer implements Serializable {
     int id;
     boolean status;
     List<Service> serviceList = new ArrayList<>();
@@ -45,6 +46,7 @@ public class Computer {
         return "Computer{" +
                 "id=" + id +
                 ", status=" + status +
+                ", serviceList=" + serviceList +
                 '}';
     }
 }
